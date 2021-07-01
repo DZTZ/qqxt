@@ -32,7 +32,7 @@
             :key="index"
           >
             <img v-if="item.url" :src="item.url" alt="加载错误" />
-            <div class="img-info">
+            <div class="img-info" v-if="isMobile">
               <div class="date">{{ item.add_time }}</div>
               <div class="operation" title="下载" @click="onDownload(item)">
                 <img :src="downloadIcon" alt="" />
