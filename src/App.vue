@@ -33,7 +33,11 @@
           >
             <img v-if="item.url" :src="item.url" alt="加载错误" />
             <div class="img-info">
-              123
+              <div class="date">{{ item.add_time }}</div>
+              <div class="operation" title="下载" @click="onDownload(item)">
+                <img :src="downloadIcon" alt="" />
+                <span>{{ item.downloads }}</span>
+              </div>
             </div>
           </div>
         </template>
@@ -43,7 +47,7 @@
   </div>
 </template>
 <script>
-import { pictureList, labelList } from "@/request/api";
+import { pictureList, labelList, updatePicture } from "@/request/api";
 import LoadingDiv from "@/components/loading";
 export default {
   components: {
@@ -53,6 +57,7 @@ export default {
     return {
       dataArr: [],
       logoUrl: require("@/assets/images/xia.svg"),
+      downloadIcon: require("@/assets/images/download.png"),
       labelList: [],
       label: "",
       loading: false,
@@ -114,6 +119,30 @@ export default {
         /(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i
       );
       return flag;
+    },
+    onDownload({ url, id, downloads }) {
+      var x = new XMLHttpRequest();
+      x.open("GET", url, true);
+      x.responseType = "blob";
+      x.onload = function() {
+        var url = window.URL.createObjectURL(x.response);
+        var a = document.createElement("a");
+        a.href = url;
+        a.download = "";
+        a.click();
+      };
+      x.send();
+      this.dataArr.map(item => {
+        if (item.id == id) {
+          item.downloads++;
+        }
+      });
+
+      let parameter = {
+        where: `[["id", "=", "${id}"]]`,
+        data: JSON.stringify({ downloads: ++downloads })
+      };
+      updatePicture(parameter);
     },
     handleScroll() {
       //变量scrollTop是滚动条滚动时，距离顶部的距离
@@ -204,6 +233,27 @@ export default {
       left: 0;
       opacity: 0;
       transition: opacity 2s;
+      padding: 4px 10px;
+      color: #66cac0;
+      display: flex;
+      .date {
+        flex: 3;
+      }
+      .operation {
+        flex: 2;
+        text-align: right;
+        cursor: pointer;
+        img {
+          width: 20px;
+          vertical-align: middle;
+          margin-right: 4px;
+        }
+        span {
+          vertical-align: middle;
+        }
+        div {
+        }
+      }
     }
   }
   .cell-item-hover {
@@ -289,5 +339,4 @@ export default {
     clip-path: inset(0 0 0 98%);
   }
 }
-
 </style>
