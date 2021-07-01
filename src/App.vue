@@ -9,62 +9,154 @@
           青青虾条
         </div>
       </div>
+      <div class="tab-content">
+        <div :class="`${!label ? 'activation' : ''}`" @click="selectLabel('')">
+          ALL
+        </div>
+        <div
+          v-for="item in labelList"
+          :key="item.id"
+          @click="selectLabel(item.label)"
+          :class="`${label == item.label ? 'activation' : ''}`"
+        >
+          {{ item.label }}
+        </div>
+      </div>
     </div>
     <div class="content">
-      <waterfall :col="3" :data="dataArr" @loadmore="loadmore">
+      <waterfall :col="3" :data="dataArr">
         <template>
-          <div class="cell-item" v-for="(item, index) in dataArr" :key="index">
+          <div
+            :class="`cell-item ${isMobile ? 'cell-item-hover' : ''}`"
+            v-for="(item, index) in dataArr"
+            :key="index"
+          >
             <img v-if="item.url" :src="item.url" alt="加载错误" />
           </div>
         </template>
       </waterfall>
+      <LoadingDiv :isShow="loading"></LoadingDiv>
     </div>
   </div>
 </template>
 <script>
 import { pictureList, labelList } from "@/request/api";
+import LoadingDiv from "@/components/loading";
 export default {
+  components: {
+    LoadingDiv
+  },
   data() {
     return {
       dataArr: [],
       logoUrl: require("@/assets/images/xia.svg"),
-      label: ""
+      labelList: [],
+      label: "",
+      loading: false,
+      current: 0,
+      page: 1,
+      perpage: 20,
+      isEnd: false,
+      isMobile: !this.getMobile()
     };
   },
   created() {
     this.getList();
+    this.getLabelList();
+  },
+  mounted() {
+    window.addEventListener("scroll", this.handleScroll);
   },
   methods: {
     getList() {
-      this.tableLoading = true;
+      this.loading = true;
+      let { page, perpage } = this;
       let label = this.label;
-      let data = { where_id: "GE-1", order: ["id DESC"] };
+      let data = { where_id: "GE-1", order: ["id DESC"], page, perpage };
       if (label) {
         data.where_label = "LIKE-" + label;
       }
       pictureList(data).then(res => {
         if (res.data.err_code === 0) {
-          this.dataArr = res.data.list;
+          let data = res.data;
+          this.isEnd = page * perpage >= data.total;
+
+          if (page != 1) {
+            this.dataArr = [...this.dataArr, ...data.list];
+          } else {
+            this.dataArr = data.list;
+          }
         } else {
           this.$message.success(res.data.err_msg);
         }
-        this.tableLoading = false;
+        this.loading = false;
       });
     },
-    loadmore() {
-      console.log(999999);
+    getLabelList() {
+      labelList().then(res => {
+        if (res.data.err_code === 0) {
+          this.labelList = res.data.list;
+        } else {
+          this.$message.success(res.data.err_msg);
+        }
+      });
+    },
+    selectLabel(label) {
+      this.label = label;
+      this.page = 1;
+      this.getList();
+    },
+    getMobile() {
+      let flag = navigator.userAgent.match(
+        /(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i
+      );
+      return flag;
+    },
+    handleScroll() {
+      //变量scrollTop是滚动条滚动时，距离顶部的距离
+      let scrollTop =
+        document.documentElement.scrollTop || document.body.scrollTop;
+      //变量windowHeight是可视区的高度
+      let windowHeight =
+        document.documentElement.clientHeight || document.body.clientHeight;
+      //变量scrollHeight是滚动条的总高度
+      let scrollHeight =
+        document.documentElement.scrollHeight || document.body.scrollHeight;
+      //滚动条到底部的条件
+      if (scrollTop + windowHeight + 80 > scrollHeight && !this.isEnd) {
+        this.getList(this.page++);
+      }
     }
   }
 };
 </script>
 <style lang="less">
 @import url("~@/assets/styles/global.css");
+@button-bg: #66cac0;
+.header-content {
+  text-align: center;
+  padding-bottom: 12px;
+}
 
 .header {
-  padding: 10px;
-  .header-content {
-    max-width: 1000px;
+  padding: 10px 6px 0 6px;
+  .tab-content {
+    max-width: 986px;
     margin: 0 auto;
+    div {
+      display: inline-block;
+      margin: 0 8px 8px 0;
+      border: 1px solid #66cac0;
+      color: #66cac0;
+      padding: 2px 12px;
+      border-radius: 5px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .activation {
+      background: #66cac0;
+      color: #fff;
+    }
   }
 }
 
@@ -84,19 +176,101 @@ export default {
   font-width: 600;
   line-height: 44px;
 }
-
+::-webkit-scrollbar {
+  display: none; /* Chrome Safari */
+}
 .content {
+  scrollbar-width: none; /* firefox */
+  -ms-overflow-style: none; /* IE 10+ */
   max-width: 1000px;
   margin: 0 auto;
+  padding: 0 4px;
   .cell-item {
-    margin: 0 0.5rem 1rem 0.5rem;
+    margin: 1rem 0.5rem;
+    position: relative;
+    transition: all 0.3s;
+  }
+  .cell-item-hover {
+    //======动画开始======
+    &:hover {
+      filter: contrast(1.1);
+      &:active {
+        filter: contrast(0.9);
+      }
+      &::before,
+      &::after {
+        content: "";
+        position: absolute;
+        top: -8px;
+        left: -8px;
+        right: -8px;
+        bottom: -8px;
+        border: 3px solid #66cac0;
+        transition: all 0.5s;
+        animation: clippath 3s infinite linear;
+        border-radius: 10px;
+      }
+      &::after {
+        animation: clippath 3s infinite -1.5s linear;
+      }
+    }
+    //======动画结束======
   }
 }
+
 @media screen and (max-width: 375px) {
+  .header {
+    .tab-content {
+      div {
+        margin: 0 4px 4px 0;
+      }
+    }
+  }
   .content {
     .cell-item {
-      margin: 0 0.3rem 0.6rem 0.3rem;
+      margin: 0.4rem 0.2rem;
+      //======动画开始======
+      &:hover {
+        filter: contrast(1.1);
+        &:active {
+          filter: contrast(0.9);
+        }
+        &::before,
+        &::after {
+          content: "";
+          position: absolute;
+          top: -6px;
+          left: -6px;
+          right: -6px;
+          bottom: -6px;
+          border: 1px solid #66cac0;
+          transition: all 0.5s;
+          animation: clippath 3s infinite linear;
+          border-radius: 10px;
+        }
+        &::after {
+          animation: clippath 3s infinite -1.5s linear;
+        }
+      }
+      //======动画结束======
     }
+  }
+}
+
+@keyframes clippath {
+  0%,
+  100% {
+    clip-path: inset(0 0 98% 0);
+  }
+
+  25% {
+    clip-path: inset(0 98% 0 0);
+  }
+  50% {
+    clip-path: inset(98% 0 0 0);
+  }
+  75% {
+    clip-path: inset(0 0 0 98%);
   }
 }
 </style>

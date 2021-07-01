@@ -1,9 +1,6 @@
 let cdn = {
-  css:[],
-  js: [
-    "https://cdn.jsdelivr.net/npm/vue@2.5.21/dist/vue.min.js",
-    "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.23.0/moment.min.js"
-  ]
+  css: [],
+  js: ["https://cdn.jsdelivr.net/npm/vue@2.5.21/dist/vue.min.js"]
 };
 module.exports = {
   publicPath: "./",
