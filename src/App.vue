@@ -32,6 +32,9 @@
             :key="index"
           >
             <img v-if="item.url" :src="item.url" alt="加载错误" />
+            <div class="img-info">
+              123
+            </div>
           </div>
         </template>
       </waterfall>
@@ -189,6 +192,19 @@ export default {
     margin: 1rem 0.5rem;
     position: relative;
     transition: all 0.3s;
+    &:hover {
+      .img-info {
+        opacity: 1;
+      }
+    }
+    .img-info {
+      position: absolute;
+      width: 100%;
+      bottom: 0;
+      left: 0;
+      opacity: 0;
+      transition: opacity 2s;
+    }
   }
   .cell-item-hover {
     //======动画开始======
@@ -273,4 +289,5 @@ export default {
     clip-path: inset(0 0 0 98%);
   }
 }
+
 </style>
