@@ -125,7 +125,9 @@ export default {
         } else {
           this.$message.success(res.data.err_msg);
         }
-        this.loading = false;
+        setTimeout(() => {
+          this.loading = false;
+        }, 2222);
       });
     },
     getLabelList() {
@@ -223,7 +225,7 @@ export default {
           document.documentElement.clientHeight,
           document.body.clientHeight
         );
-      if (clientHeight + scrollTop >= scrollHeight && !this.isEnd) {
+      if (clientHeight + scrollTop >= scrollHeight && !this.isEnd && !this.loading) {
         console.log("===加载更多内容……===");
         this.getList(this.page++);
       }
@@ -374,7 +376,7 @@ export default {
       margin-bottom: 10px;
     }
   }
-  .bottom{
+  .bottom {
     color: #66cac0;
     padding-top: 15px;
   }
