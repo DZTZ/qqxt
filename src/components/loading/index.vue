@@ -1,5 +1,5 @@
 <template>
-  <div class="msg">
+  <div class="load">
     <div class="breeding-rhombus-spinner" v-if="isShow">
       <div class="rhombus child-1"></div>
       <div class="rhombus child-2"></div>
@@ -36,8 +36,11 @@ export default {
 //  @w: 45px;
 //}
 
-.msg {
+.load {
   padding: 20px;
+  position: absolute;
+  width: 100%;
+  bottom: 20px;
 }
 .breeding-rhombus-spinner {
   margin: 0 auto;

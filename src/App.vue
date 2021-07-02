@@ -225,7 +225,11 @@ export default {
           document.documentElement.clientHeight,
           document.body.clientHeight
         );
-      if (clientHeight + scrollTop >= scrollHeight && !this.isEnd && !this.loading) {
+      if (
+        clientHeight + scrollTop >= scrollHeight &&
+        !this.isEnd &&
+        !this.loading
+      ) {
         console.log("===加载更多内容……===");
         this.getList(this.page++);
       }
@@ -236,15 +240,26 @@ export default {
 <style lang="less">
 @import url("~@/assets/styles/global.css");
 @button-bg: #66cac0;
-.header-content {
-  padding-bottom: 12px;
-  user-select: none;
-}
 
 .header {
   padding: 10px 6px 0 6px;
   user-select: none;
   text-align: center;
+  .header-content {
+    padding-bottom: 12px;
+    user-select: none;
+    text-align: center;
+    position: relative;
+    .count {
+      position: absolute;
+      right: 0;
+      top: 42%;
+      transform: translateY(-50%);
+      color: #66cac0;
+      font-size: 14px;
+      padding-right: 5px;
+    }
+  }
   .tab-content {
     max-width: 986px;
     margin: 0 auto;
@@ -262,13 +277,6 @@ export default {
       background: #66cac0;
       color: #fff;
     }
-  }
-  .count {
-    float: right;
-    color: #66cac0;
-    line-height: 48px;
-    font-size: 14px;
-    padding-right: 5px;
   }
 }
 
@@ -292,6 +300,7 @@ export default {
   display: none; /* Chrome Safari */
 }
 .content {
+  position: relative;
   text-align: center;
   scrollbar-width: none; /* firefox */
   -ms-overflow-style: none; /* IE 10+ */
@@ -378,7 +387,7 @@ export default {
   }
   .bottom {
     color: #66cac0;
-    padding-top: 15px;
+    padding: 15px;
   }
 }
 
