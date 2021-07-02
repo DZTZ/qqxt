@@ -30,15 +30,15 @@ module.exports = {
   }
   // assetsDir: 'static',
   // devServer: {
-  //   proxy: {
-  //     "/?s=": {
-  //       target: "http://hd215.api.yesapi.cn", // 测试
-  //       ws: false,
-  //       changeOrigin: true,
-  //       // pathRewrite: {
-  //       //   "^/?s=": "/123"
-  //       // }
-  //     }
-  //   }
+    //   proxy: {
+    //     "/?s=": {
+    //       target: "http://hd215.api.yesapi.cn", // 测试
+    //       ws: false,
+    //       changeOrigin: true,
+    //       // pathRewrite: {
+    //       //   "^/?s=": "/123"
+    //       // }
+    //     }
+    //   }
   // }
 };

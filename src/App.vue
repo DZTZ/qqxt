@@ -8,6 +8,7 @@
         <div class="title">
           青青虾条
         </div>
+        <div class="count">访问次数:{{ count }}</div>
       </div>
       <div class="tab-content">
         <div :class="`${!label ? 'activation' : ''}`" @click="selectLabel('')">
@@ -24,14 +25,14 @@
       </div>
     </div>
     <div class="content">
-      <waterfall :col="3" :data="dataArr">
+      <waterfall :col="3" :data="dataArr" @scroll="onScroll">
         <template>
           <div
             :class="`cell-item ${isMobile ? 'cell-item-hover' : ''}`"
             v-for="(item, index) in dataArr"
             :key="index"
           >
-            <img v-if="item.url" :src="item.url" alt="加载错误" />
+            <img :src="item.url" alt="加载错误" preview="2" />
             <div class="img-info" v-if="isMobile">
               <div class="date">{{ item.add_time }}</div>
               <div class="operation" title="下载" @click="onDownload(item)">
@@ -43,15 +44,24 @@
         </template>
       </waterfall>
       <LoadingDiv :isShow="loading"></LoadingDiv>
+      <Message :isShow="isMessage" :isMobile="isMobile"></Message>
     </div>
   </div>
 </template>
 <script>
-import { pictureList, labelList, updatePicture } from "@/request/api";
+import {
+  pictureList,
+  labelList,
+  updatePicture,
+  updateFrequency,
+  getFrequency
+} from "@/request/api";
 import LoadingDiv from "@/components/loading";
+import Message from "@/components/Message";
 export default {
   components: {
-    LoadingDiv
+    LoadingDiv,
+    Message
   },
   data() {
     return {
@@ -65,12 +75,33 @@ export default {
       page: 1,
       perpage: 20,
       isEnd: false,
-      isMobile: !this.getMobile()
+      isMessage: false,
+      isMobile: !this.getMobile(),
+      count: 0
     };
   },
   created() {
     this.getList();
     this.getLabelList();
+    getFrequency({ id: 1 }).then(res => {
+      if (res.data.err_code === 0) {
+        this.count = res.data.data.count;
+      }
+    });
+
+    setTimeout(() => {
+      this.isMessage = true;
+    }, 10000);
+    setTimeout(() => {
+      this.isMessage = false;
+    }, 17000);
+
+    let access = localStorage.getItem("access"),
+      newDate = Date.parse(new Date());
+    if (!(access && access + 3600 > newDate)) {
+      localStorage.setItem("access", newDate);
+      this.increase();
+    }
   },
   mounted() {
     window.addEventListener("scroll", this.handleScroll);
@@ -94,6 +125,7 @@ export default {
           } else {
             this.dataArr = data.list;
           }
+          this.$previewRefresh();
         } else {
           this.$message.success(res.data.err_msg);
         }
@@ -108,6 +140,13 @@ export default {
           this.$message.success(res.data.err_msg);
         }
       });
+    },
+    increase() {
+      let parameter = {
+        where: `[["id", "=", "1"]]`,
+        data: JSON.stringify({ count: ++this.count })
+      };
+      updateFrequency(parameter);
     },
     selectLabel(label) {
       this.label = label;
@@ -155,7 +194,11 @@ export default {
       let scrollHeight =
         document.documentElement.scrollHeight || document.body.scrollHeight;
       //滚动条到底部的条件
-      if (scrollTop + windowHeight + 80 > scrollHeight && !this.isEnd) {
+      if (
+        scrollTop + windowHeight + 80 > scrollHeight &&
+        !this.isEnd &&
+        !this.loading
+      ) {
         this.getList(this.page++);
       }
     }
@@ -163,15 +206,19 @@ export default {
 };
 </script>
 <style lang="less">
+bldy {
+}
 @import url("~@/assets/styles/global.css");
 @button-bg: #66cac0;
 .header-content {
-  text-align: center;
   padding-bottom: 12px;
+  user-select: none;
 }
 
 .header {
   padding: 10px 6px 0 6px;
+  user-select: none;
+  text-align: center;
   .tab-content {
     max-width: 986px;
     margin: 0 auto;
@@ -189,6 +236,13 @@ export default {
       background: #66cac0;
       color: #fff;
     }
+  }
+  .count{
+    float: right;
+    color: #66cac0;
+    line-height: 48px;
+    font-size: 14px;
+    padding-right: 5px;
   }
 }
 
@@ -212,6 +266,7 @@ export default {
   display: none; /* Chrome Safari */
 }
 .content {
+  text-align: center;
   scrollbar-width: none; /* firefox */
   -ms-overflow-style: none; /* IE 10+ */
   max-width: 1000px;
@@ -234,7 +289,8 @@ export default {
       opacity: 0;
       transition: opacity 2s;
       padding: 4px 10px;
-      color: #66cac0;
+      //color: #66cac0;
+      color: #fff;
       display: flex;
       .date {
         flex: 3;
@@ -294,7 +350,7 @@ export default {
   }
   .content {
     .cell-item {
-      margin: 0.4rem 0.2rem;
+      margin: 0.3rem 0.15rem;
       //======动画开始======
       &:hover {
         filter: contrast(1.1);
