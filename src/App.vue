@@ -25,7 +25,7 @@
       </div>
     </div>
     <div class="content">
-      <waterfall :col="3" :data="dataArr" @scroll="onScroll">
+      <waterfall :col="3" :data="dataArr">
         <template>
           <div
             :class="`cell-item ${isMobile ? 'cell-item-hover' : ''}`"
@@ -182,22 +182,46 @@ export default {
       };
       updatePicture(parameter);
     },
+    loadmore() {
+      console.log(1231);
+    },
     handleScroll() {
       //变量scrollTop是滚动条滚动时，距离顶部的距离
-      let scrollTop =
-        document.documentElement.scrollTop || document.body.scrollTop;
-      //变量windowHeight是可视区的高度
-      let windowHeight =
-        document.documentElement.clientHeight || document.body.clientHeight;
-      //变量scrollHeight是滚动条的总高度
-      let scrollHeight =
-        document.documentElement.scrollHeight || document.body.scrollHeight;
+      // let scrollTop =
+      //   document.documentElement.scrollTop || document.body.scrollTop;
+      // //变量windowHeight是可视区的高度
+      // let windowHeight =
+      //   document.documentElement.clientHeight || document.body.clientHeight;
+      // //变量scrollHeight是滚动条的总高度
+      // let scrollHeight =
+      //   document.documentElement.scrollHeight || document.body.scrollHeight;
       //滚动条到底部的条件
-      if (
-        scrollTop + windowHeight + 80 > scrollHeight &&
-        !this.isEnd &&
-        !this.loading
-      ) {
+      // if (
+      //   scrollTop + windowHeight + 80 > scrollHeight &&
+      //   !this.isEnd &&
+      //   !this.loading
+      // ) {
+      //   this.getList(this.page++);
+      // }
+      var scrollHeight = Math.max(
+        document.documentElement.scrollHeight,
+        document.body.scrollHeight
+      );
+      //滚动条滚动距离
+      var scrollTop =
+        window.pageYOffset ||
+        document.documentElement.scrollTop ||
+        document.body.scrollTop;
+      //窗口可视范围高度
+      var clientHeight =
+        window.innerHeight ||
+        Math.min(
+          document.documentElement.clientHeight,
+          document.body.clientHeight
+        );
+
+      if (clientHeight + scrollTop >= scrollHeight) {
+        console.log("===加载更多内容……===");
         this.getList(this.page++);
       }
     }
