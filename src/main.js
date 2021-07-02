@@ -1,5 +1,6 @@
 import Vue from "vue";
 import App from "./App.vue";
+// import App from "./views/Home.vue";
 import axios from "./request/axios";
 import waterfall from "vue-waterfall2";
 import preview from "vue-photo-preview";

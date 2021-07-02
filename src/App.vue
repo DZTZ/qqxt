@@ -32,7 +32,7 @@
             v-for="(item, index) in dataArr"
             :key="index"
           >
-            <img :src="item.url" alt="加载错误" preview="2" />
+            <img v-if="item.url" :src="item.url" alt="加载错误" preview="2" />
             <div class="img-info" v-if="isMobile">
               <div class="date">{{ item.add_time }}</div>
               <div class="operation" title="下载" @click="onDownload(item)">
@@ -114,6 +114,7 @@ export default {
             this.dataArr = data.list;
           }
           this.$previewRefresh();
+          console.log(this.dataArr)
         } else {
           this.$message.success(res.data.err_msg);
         }
