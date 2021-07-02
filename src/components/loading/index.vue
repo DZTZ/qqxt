@@ -1,5 +1,5 @@
 <template>
-  <div class="box">
+  <div class="msg">
     <div class="breeding-rhombus-spinner" v-if="isShow">
       <div class="rhombus child-1"></div>
       <div class="rhombus child-2"></div>
@@ -31,12 +31,12 @@ export default {
 </script>
 
 <style lang="less">
-@w: 40px;
-@media screen and (max-width: 375px) {
-  w: 40px;
-}
+@w: 58px;
+//@media screen and (max-width: 375px) {
+//  @w: 45px;
+//}
 
-.box {
+.msg {
   padding: 20px;
 }
 .breeding-rhombus-spinner {

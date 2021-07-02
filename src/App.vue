@@ -10,7 +10,7 @@
         </div>
         <div class="count">访问次数:{{ count }}</div>
       </div>
-      <div class="tab-content">
+      <div class="tab-content" v-if="labelList.length != 0">
         <div :class="`${!label ? 'activation' : ''}`" @click="selectLabel('')">
           ALL
         </div>
@@ -43,7 +43,14 @@
           </div>
         </template>
       </waterfall>
-      <LoadingDiv :isShow="loading"></LoadingDiv>
+      <div class="empty-box" v-if="dataArr.length == 0">
+        <img :src="emptyUrl" alt="" />
+        <p>什么也没有~</p>
+      </div>
+      <div v-if="dataArr.length != 0">
+        <div v-if="isEnd" class="bottom">到底啦～</div>
+        <LoadingDiv :isShow="!isEnd"></LoadingDiv>
+      </div>
       <Message :isShow="isMessage" :isMobile="isMobile"></Message>
     </div>
   </div>
@@ -68,6 +75,7 @@ export default {
       dataArr: [],
       logoUrl: require("@/assets/images/xia.svg"),
       downloadIcon: require("@/assets/images/download.png"),
+      emptyUrl: require("@/assets/images/empty.png"),
       labelList: [],
       label: "",
       loading: false,
@@ -114,7 +122,6 @@ export default {
             this.dataArr = data.list;
           }
           this.$previewRefresh();
-          console.log(this.dataArr);
         } else {
           this.$message.success(res.data.err_msg);
         }
@@ -182,9 +189,6 @@ export default {
       };
       updatePicture(parameter);
     },
-    loadmore() {
-      console.log(1231);
-    },
     handleScroll() {
       //变量scrollTop是滚动条滚动时，距离顶部的距离
       // let scrollTop =
@@ -219,8 +223,7 @@ export default {
           document.documentElement.clientHeight,
           document.body.clientHeight
         );
-
-      if (clientHeight + scrollTop >= scrollHeight) {
+      if (clientHeight + scrollTop >= scrollHeight && !this.isEnd) {
         console.log("===加载更多内容……===");
         this.getList(this.page++);
       }
@@ -229,8 +232,6 @@ export default {
 };
 </script>
 <style lang="less">
-bldy {
-}
 @import url("~@/assets/styles/global.css");
 @button-bg: #66cac0;
 .header-content {
@@ -299,6 +300,9 @@ bldy {
     margin: 1rem 0.5rem;
     position: relative;
     transition: all 0.3s;
+    img {
+      -webkit-user-select: none;
+    }
     &:hover {
       .img-info {
         opacity: 1;
@@ -360,6 +364,19 @@ bldy {
       }
     }
     //======动画结束======
+  }
+  .empty-box {
+    margin: 100px auto;
+    color: #66cac0;
+    text-align: center;
+    img {
+      width: 40px;
+      margin-bottom: 10px;
+    }
+  }
+  .bottom{
+    color: #66cac0;
+    padding-top: 15px;
   }
 }
 
