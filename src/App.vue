@@ -114,7 +114,7 @@ export default {
             this.dataArr = data.list;
           }
           this.$previewRefresh();
-          console.log(this.dataArr)
+          console.log(this.dataArr);
         } else {
           this.$message.success(res.data.err_msg);
         }
@@ -122,7 +122,7 @@ export default {
       });
     },
     getLabelList() {
-      labelList().then(res => {
+      labelList({ page: 1, perpage: 100 }).then(res => {
         if (res.data.err_code === 0) {
           this.labelList = res.data.list;
         } else {
