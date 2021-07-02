@@ -83,25 +83,13 @@ export default {
   created() {
     this.getList();
     this.getLabelList();
-    getFrequency({ id: 1 }).then(res => {
-      if (res.data.err_code === 0) {
-        this.count = res.data.data.count;
-      }
-    });
-
+    this.increase();
     setTimeout(() => {
       this.isMessage = true;
     }, 10000);
     setTimeout(() => {
       this.isMessage = false;
     }, 17000);
-
-    let access = localStorage.getItem("access"),
-      newDate = Date.parse(new Date());
-    if (!(access && access + 3600 > newDate)) {
-      localStorage.setItem("access", newDate);
-      this.increase();
-    }
   },
   mounted() {
     window.addEventListener("scroll", this.handleScroll);
@@ -142,11 +130,21 @@ export default {
       });
     },
     increase() {
-      let parameter = {
-        where: `[["id", "=", "1"]]`,
-        data: JSON.stringify({ count: ++this.count })
-      };
-      updateFrequency(parameter);
+      getFrequency({ id: 1 }).then(res => {
+        if (res.data.err_code === 0) {
+          this.count = res.data.data.count;
+          let access = localStorage.getItem("access"),
+            newDate = Date.parse(new Date());
+          if (!(access && access + 3600 > newDate)) {
+            localStorage.setItem("access", newDate);
+            let parameter = {
+              where: `[["id", "=", "1"]]`,
+              data: JSON.stringify({ count: ++this.count })
+            };
+            updateFrequency(parameter);
+          }
+        }
+      });
     },
     selectLabel(label) {
       this.label = label;
@@ -237,7 +235,7 @@ bldy {
       color: #fff;
     }
   }
-  .count{
+  .count {
     float: right;
     color: #66cac0;
     line-height: 48px;
