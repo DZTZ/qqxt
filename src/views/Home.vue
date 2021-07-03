@@ -1,9 +1,9 @@
 <!--<template>-->
 <!--  <div>-->
-<!--    <waterfall :col="3" :data="dataArr" @loadmore="loadmore" >-->
-<!--      <template>-->
-<!--        <div :class="`cell-item`" v-for="(item, index) in dataArr" :key="index">-->
-<!--          <img v-if="item.url" :src="item.url" alt="加载错误" preview="2" />-->
+<!--    <waterfall :col="3" :data="dataArr" @loadmore="loadmore"  :width="itemWidth" :gutterWidth="gutterWidth" >-->
+<!--      <template >-->
+<!--        <div :class="`cell-item`" v-for="(item, index) in dataArr" :key="index" >-->
+<!--          <img v-if="item.url" :src="item.url" alt="加载错误" preview="2"/>-->
 <!--        </div>-->
 <!--      </template>-->
 <!--    </waterfall>-->
@@ -56,11 +56,20 @@
 <!--      ],-->
 <!--      dataArr: [],-->
 <!--      page: 1,-->
-<!--      perpage: 20-->
+<!--      perpage: 20,-->
+
 <!--    };-->
 <!--  },-->
 <!--  created() {-->
 <!--    this.getList();-->
+<!--  },-->
+<!--  computed:{-->
+<!--    itemWidth(){-->
+<!--      return (231*0.5*(document.documentElement.clientWidth/375)) // #rem布局 计算宽度-->
+<!--    },-->
+<!--    gutterWidth(){-->
+<!--      return (12*0.5*(document.documentElement.clientWidth/375))	//#rem布局 计算x轴方向margin(y轴方向的margin自定义在css中即可)-->
+<!--    }-->
 <!--  },-->
 <!--  methods: {-->
 <!--    getList() {-->
@@ -93,7 +102,7 @@
 <!--  }-->
 <!--};-->
 <!--</script>-->
-<!--<style lang="less" scoped>-->
+<!--<style lang="less" >-->
 <!--.cell-item {-->
 <!--  img {-->
 <!--    width: 100%;-->

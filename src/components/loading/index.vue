@@ -32,9 +32,9 @@ export default {
 
 <style lang="less">
 @w: 58px;
-//@media screen and (max-width: 375px) {
-//  @w: 45px;
-//}
+@media screen and (max-width: 375px) {
+  @w: 45px;
+}
 
 .load {
   padding: 20px;

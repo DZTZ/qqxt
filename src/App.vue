@@ -25,7 +25,13 @@
       </div>
     </div>
     <div class="content">
-      <waterfall :col="3" :data="dataArr">
+      <waterfall
+        :col="3"
+        :data="dataArr"
+        :width="itemWidth"
+        :gutterWidth="gutterWidth"
+        :lazyDistance="500"
+      >
         <template>
           <div
             :class="`cell-item ${isMobile ? 'cell-item-hover' : ''}`"
@@ -98,6 +104,22 @@ export default {
     setTimeout(() => {
       this.isMessage = false;
     }, 17000);
+  },
+  computed: {
+    itemWidth() {
+      if (this.isMobile) {
+        return 310;
+      } else {
+        return 234 * 0.5 * (document.documentElement.clientWidth / 375); // #rem布局 计算宽度
+      }
+    },
+    gutterWidth() {
+      if (this.isMobile) {
+        return 8;
+      } else {
+        return 12 * 0.5 * (document.documentElement.clientWidth / 375); //#rem布局 计算x轴方向margin(y轴方向的margin自定义在css中即可)
+      }
+    }
   },
   mounted() {
     window.addEventListener("scroll", this.handleScroll);
@@ -301,14 +323,16 @@ export default {
 }
 .content {
   position: relative;
+  min-height: 300px;
   text-align: center;
   scrollbar-width: none; /* firefox */
   -ms-overflow-style: none; /* IE 10+ */
   max-width: 1000px;
   margin: 0 auto;
-  padding: 0 4px;
+  padding: 0 6px;
   .cell-item {
-    margin: 1rem 0.5rem;
+    //margin: 1rem 0.5rem;
+    margin-bottom: 6px;
     position: relative;
     transition: all 0.3s;
     img {
@@ -350,32 +374,32 @@ export default {
       }
     }
   }
-  .cell-item-hover {
-    //======动画开始======
-    &:hover {
-      filter: contrast(1.1);
-      &:active {
-        filter: contrast(0.9);
-      }
-      &::before,
-      &::after {
-        content: "";
-        position: absolute;
-        top: -8px;
-        left: -8px;
-        right: -8px;
-        bottom: -8px;
-        border: 3px solid #66cac0;
-        transition: all 0.5s;
-        animation: clippath 3s infinite linear;
-        border-radius: 10px;
-      }
-      &::after {
-        animation: clippath 3s infinite -1.5s linear;
-      }
-    }
-    //======动画结束======
-  }
+  //.cell-item-hover {
+  //  //======动画开始======
+  //  &:hover {
+  //    filter: contrast(1.1);
+  //    &:active {
+  //      filter: contrast(0.9);
+  //    }
+  //    &::before,
+  //    &::after {
+  //      content: "";
+  //      position: absolute;
+  //      top: -8px;
+  //      left: -8px;
+  //      right: -8px;
+  //      bottom: -8px;
+  //      border: 3px solid #66cac0;
+  //      transition: all 0.5s;
+  //      animation: clippath 3s infinite linear;
+  //      border-radius: 10px;
+  //    }
+  //    &::after {
+  //      animation: clippath 3s infinite -1.5s linear;
+  //    }
+  //  }
+  //  //======动画结束======
+  //}
   .empty-box {
     margin: 100px auto;
     color: #66cac0;
@@ -391,7 +415,7 @@ export default {
   }
 }
 
-@media screen and (max-width: 375px) {
+@media screen and (max-width: 370px) {
   .header {
     .tab-content {
       div {
@@ -401,7 +425,8 @@ export default {
   }
   .content {
     .cell-item {
-      margin: 0.3rem 0.15rem;
+      //margin: 0.3rem 0.15rem;
+      margin-bottom: 4px;
       //======动画开始======
       &:hover {
         filter: contrast(1.1);
