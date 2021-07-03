@@ -59,6 +59,12 @@
       </div>
       <Message :isShow="isMessage" :isMobile="isMobile"></Message>
     </div>
+    <div
+      :class="`back-top ${isBackTop ? 'back-top-show' : ''}`"
+      @click="backTop"
+    >
+      <img :src="topUrl" alt="" />
+    </div>
   </div>
 </template>
 <script>
@@ -82,6 +88,7 @@ export default {
       logoUrl: require("@/assets/images/xia.svg"),
       downloadIcon: require("@/assets/images/download.png"),
       emptyUrl: require("@/assets/images/empty.png"),
+      topUrl: require("@/assets/images/top.svg"),
       labelList: [],
       label: "",
       loading: false,
@@ -91,7 +98,8 @@ export default {
       isEnd: false,
       isMessage: false,
       isMobile: !this.getMobile(),
-      count: 0
+      count: 0,
+      isBackTop: false
     };
   },
   created() {
@@ -213,6 +221,19 @@ export default {
       };
       updatePicture(parameter);
     },
+    backTop() {
+      let timer = setInterval(function() {
+        let osTop =
+          document.documentElement.scrollTop || document.body.scrollTop;
+        let ispeed = Math.floor(-osTop / 10);
+        document.documentElement.scrollTop = document.body.scrollTop =
+          osTop + ispeed;
+        this.isTop = true;
+        if (osTop === 0) {
+          clearInterval(timer);
+        }
+      }, 16);
+    },
     handleScroll() {
       //变量scrollTop是滚动条滚动时，距离顶部的距离
       // let scrollTop =
@@ -231,6 +252,7 @@ export default {
       // ) {
       //   this.getList(this.page++);
       // }
+
       var scrollHeight = Math.max(
         document.documentElement.scrollHeight,
         document.body.scrollHeight
@@ -254,6 +276,11 @@ export default {
       ) {
         console.log("===加载更多内容……===");
         this.getList(this.page++);
+      }
+      if (scrollTop > 500 && !this.isBackTop) {
+        this.isBackTop = true;
+      } else if (scrollTop < 500 && this.isBackTop) {
+        this.isBackTop = false;
       }
     }
   }
@@ -415,6 +442,20 @@ export default {
   }
 }
 
+.back-top {
+  width: 55px;
+  position: fixed;
+  right: 20px;
+  bottom: -60px;
+  transition: bottom 1s;
+  cursor: pointer;
+  img {
+    width: 100%;
+  }
+}
+.back-top-show {
+  bottom: 60px;
+}
 @media screen and (max-width: 370px) {
   .header {
     .tab-content {
